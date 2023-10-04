@@ -5,6 +5,19 @@ from threading import Thread
 HOST = 'localhost'
 PORT = 12345
 
+def handle_client(conn, addr):
+    print(f"Accepted connection from {addr}")
+    with conn:
+        while True:
+            data = conn.recv(1024)
+            if not data:
+                break
+            
+            # Echo the received data back to the client
+            conn.sendall(data)
+
+    print(f"Connection closed with {addr}")
+
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
@@ -20,15 +33,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         client_thread.start()
 
 
-def handle_client(conn, addr):
-    print(f"Accepted connection from {addr}")
-    with conn:
-        while True:
-            data = conn.recv(1024)
-            if not data:
-                break
-            
-            # Echo the received data back to the client
-            conn.sendall(data)
 
-    print(f"Connection closed with {addr}")
