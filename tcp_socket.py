@@ -3,8 +3,8 @@ import socket
 from threading import Thread
 
 HOST = 'localhost'
-PORT = 12364
-
+PORT = 12345
+users = {"jasmine": "codingGod", "maya":"guru", "chad":"chad", "carli":"g", "scarlett":"codingMaster", "hay": "student"}
 data_file_path = "."
 
 # Declare a global variable to indicate whether the server should continue running
@@ -15,6 +15,15 @@ def handle_client(conn, addr):
     print(f"Accepted connection from {addr}")
     with conn:
         while True:
+            username = conn.recv(1024).decode('utf-8')
+            password = conn.recv(1024).decode('utf-8')
+            
+            if verify_credentials(username, password):
+                print(f"Authenticated user {username} connected.")
+            else:
+                print(f"Failed authentication attempt from {addr}.")
+                continue
+
             data = conn.recv(1024)
             if not data:
                 break
@@ -40,6 +49,13 @@ def handle_client(conn, addr):
         print(f"Connection closed with {addr}")
         conn.close()
         sys.exit(0)
+
+
+
+
+def verify_credentials(username, password):
+    return users.get(username) == password
+
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
